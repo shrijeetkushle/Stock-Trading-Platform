@@ -210,8 +210,23 @@ app.post("/newOrder", async (req, res) => {
   res.send("Order saved!");
 });
 
-app.listen(PORT, () => {
-  console.log("App started!");
-  mongoose.connect(uri);
-  console.log("DB started!");
-});
+
+async function startServer() {
+  try {
+    if (!uri) {
+      throw new Error("MONGO_URL is missing. Check backend/.env");
+    }
+
+    await mongoose.connect(uri);
+    console.log("MongoDB connected successfully!");
+
+    app.listen(PORT, () => {
+      console.log(`App started on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Failed to start backend:", error.message);
+    process.exit(1);
+  }
+}
+
+startServer();
